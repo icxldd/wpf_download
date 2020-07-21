@@ -1,0 +1,67 @@
+﻿<UserControl x:Class="WPFDemo.UC.DownResource"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WPFDemo.UC"
+                xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+              xmlns:const ="clr-namespace:WPFDemo.UC.UCConst"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <Style TargetType="TextBlock" x:Key="MainImage">
+            <Setter Property="Foreground" Value="#8f8f8f"></Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground">
+                        <Setter.Value>
+                            <LinearGradientBrush EndPoint="1,1" StartPoint="0,0">
+                                <GradientStop Color="#3a91e9" Offset="0"/>
+                                <GradientStop Color="#1445b0" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition x:Name="coltop"></RowDefinition>
+            <RowDefinition Height="0" x:Name="colbottom"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid x:Name="top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBlock x:Name="Product" Style="{StaticResource MainImage}" Tag="{x:Static const:PageConstName.ClickProduct}" Text="&#xe67b;" FontSize="180" Cursor="Hand" Margin="0 -50 0 0"  FontFamily="../TextFont/#iconfont" HorizontalAlignment="Center" VerticalAlignment="Center">
+              <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="MouseLeftButtonDown">
+                                        <i:InvokeCommandAction Command="{Binding RelativeSource={RelativeSource FindAncestor,
+                                            AncestorType={x:Type local:DownResource}},
+                                Path=DataContext.SelectProductCommand,Mode=TwoWay}" 
+                                         CommandParameter="{Binding Tag,ElementName=Product }">
+                                        </i:InvokeCommandAction>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+            </TextBlock>
+            <TextBlock x:Name="Texture" Style="{StaticResource MainImage}" Tag="{x:Static const:PageConstName.ClickTexture}" Text="&#xe674;" FontSize="180" Cursor="Hand" Margin="0 -50 0 0"  Grid.Column="1" FontFamily="../TextFont/#iconfont" HorizontalAlignment="Center" VerticalAlignment="Center">
+             <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="MouseLeftButtonDown">
+                                        <i:InvokeCommandAction Command="{Binding RelativeSource={RelativeSource FindAncestor,
+                                            AncestorType={x:Type local:DownResource}},
+                                Path=DataContext.SelectProductCommand,Mode=TwoWay}" 
+                                         CommandParameter="{Binding Tag,ElementName=Texture }">
+                                        </i:InvokeCommandAction>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+            </TextBlock>
+
+        </Grid>
+
+        <Border Grid.Row="1" Name="bottom">
+            <ContentControl x:Name="content"></ContentControl>
+        </Border>
+    </Grid>
+</UserControl>

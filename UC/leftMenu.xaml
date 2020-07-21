@@ -1,0 +1,146 @@
+﻿<UserControl x:Class="WPFDemo.UC.leftMenu"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:local="clr-namespace:WPFDemo.UC"
+             xmlns:const ="clr-namespace:WPFDemo.UC.UCConst"
+             xmlns:constGlobal="clr-namespace:WPFDemo.DataChace"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <Style TargetType="Image">
+            <Setter Property="Cursor" Value="Hand"></Setter>
+        </Style>
+        <Style TargetType="TextBlock" x:Key="letMenu">
+            <Setter Property="Foreground" Value="White"></Setter>
+            <Setter Property="Opacity" Value="0.6"></Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Opacity" Value="1"></Setter>
+                    <Setter Property="Foreground">
+                        <Setter.Value>
+                            <LinearGradientBrush EndPoint="1,1" StartPoint="0,0">
+                                <GradientStop Color="#3a91e9" Offset="0"/>
+                                <GradientStop Color="#1445b0" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="RadioButton" x:Key="leftMenuBtn">
+            <Setter Property="FocusVisualStyle">
+                <Setter.Value>
+                    <Style>
+                        <Setter Property="Control.Template">
+                            <Setter.Value>
+                                <ControlTemplate>
+                                    <Rectangle Margin="2" SnapsToDevicePixels="True" Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" StrokeThickness="0" StrokeDashArray="1 2"/>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Margin" Value="0 2 0 0"/>
+            <Setter Property="FontSize" Value="26"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="MinHeight" Value="44"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Grid>
+                            <TextBlock  Style="{StaticResource letMenu}" x:Name="resource" Tag="{TemplateBinding Tag}" Text="{TemplateBinding Content}" FontFamily="../TextFont/#iconfont" FontSize="40" Margin="{TemplateBinding Margin}" Cursor="Hand" >
+                         <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="MouseLeftButtonDown">
+                                        <i:InvokeCommandAction Command="{Binding RelativeSource={RelativeSource FindAncestor,
+                                            AncestorType={x:Type local:leftMenu}},
+                                Path=DataContext.SelectWindowCommand,Mode=TwoWay}" 
+                                         CommandParameter="{Binding Tag,ElementName=resource }">
+                                        </i:InvokeCommandAction>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </TextBlock>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter Property="Opacity" Value="1" TargetName="resource"></Setter>
+                                <Setter Property="Foreground" TargetName="resource">
+                                    <Setter.Value>
+                                        <LinearGradientBrush EndPoint="1,1" StartPoint="0,0">
+                                            <GradientStop Color="#3a91e9" Offset="0"/>
+                                            <GradientStop Color="#1445b0" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </UserControl.Resources>
+    <Grid Background="Transparent">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100"></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Border BorderBrush="#37394c"  BorderThickness="0 0 1 0" Width="60" >
+            <Grid Margin="-25 0 0 0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="80" ></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+                <StackPanel Orientation="Vertical">
+                    <Image Source="../Images/logo.png" Width="50" Height="50" Margin="0 10 0 10" Cursor="{x:Null}"></Image>
+                    <Rectangle Width="60" Fill="#37394c" HorizontalAlignment="Center" Height="2"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="1" >
+                    <RadioButton Style="{StaticResource leftMenuBtn}" Tag="{x:Static const:PageConstName.DownResource}" Content="&#xe60b;" Margin="10 10" >
+                    </RadioButton>
+                    <RadioButton Style="{StaticResource leftMenuBtn}" Tag="{x:Static const:PageConstName.DownRecord}"  Content="&#xe675;" Margin="10 10">
+                    </RadioButton>
+                </StackPanel>
+            </Grid>
+        </Border>
+        <Grid Grid.Column="1" Background="Transparent">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="60"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200"></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{x:Static constGlobal:ConstGlobal.MainTitle}" Foreground="#b6b9bf" FontSize="20" Margin="0 15"></TextBlock>
+                <StackPanel Orientation="Horizontal"  HorizontalAlignment="Right" Margin="0 10 0 0" Height="40" Grid.Column="1">
+                    <TextBlock Text="&#xe61a;" FontFamily="../TextFont/#iconfont" FontSize="20" Cursor="Hand"  Margin="0 5 25 0" Foreground="White">
+                     <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="MouseLeftButtonDown">
+                                        <i:InvokeCommandAction Command="{Binding RelativeSource={RelativeSource FindAncestor,
+                                            AncestorType={x:Type local:leftMenu}},
+                                Path=DataContext.CloseWindowCommand,Mode=TwoWay}" 
+                                         CommandParameter="{Binding}">
+                                        </i:InvokeCommandAction>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                    </TextBlock>
+                </StackPanel>
+            </Grid>
+            <ContentControl Grid.Row="1" x:Name="ShowPage" >
+            </ContentControl>
+        </Grid>
+    </Grid>
+
+</UserControl>
