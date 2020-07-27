@@ -4,8 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:WPFDemo.UC"
+             xmlns:gif="http://wpfanimatedgif.codeplex.com"
                 xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
               xmlns:const ="clr-namespace:WPFDemo.UC.UCConst"
+             xmlns:cv ="clr-namespace:WPFDemo.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -24,6 +26,7 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+        <cv:IsShowConverters x:Key="showcv"></cv:IsShowConverters>
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -57,7 +60,6 @@
                                     </i:EventTrigger>
                                 </i:Interaction.Triggers>
             </TextBlock>
-
         </Grid>
 
         <Border Grid.Row="1" Name="bottom">

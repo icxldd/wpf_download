@@ -65,6 +65,7 @@ namespace WPFDemo.UC.ViewModel
 
         private void selectWin(string pageStr)
         {
+            IsShowLoadUI = true;
             initdata(pageStr);
             UserControl showPage = null;
             if (pageStr.Equals(UCConst.PageConstName.ClickProduct))
@@ -75,6 +76,7 @@ namespace WPFDemo.UC.ViewModel
             {
                 showPage = new Texture();
             }
+            IsShowLoadUI = false;
             win.content.Content = showPage;
             win.coltop.Height = new System.Windows.GridLength(0);
             win.top.Visibility = System.Windows.Visibility.Hidden;
@@ -83,10 +85,10 @@ namespace WPFDemo.UC.ViewModel
         }
         public RelayCommand<string> SelectProductCommand { get; set; }
 
-
+        private bool _IsShowLoadUI;
+        public bool IsShowLoadUI { get { return _IsShowLoadUI; } set { _IsShowLoadUI = value; RaisePropertyChanged(); } }
 
         public RelayCommand<CategoryTextImage> SelectedCategoryCommand { get; set; }
-
 
         public RelayCommand<CategoryTextImage> SelectedMaterialCategoryCommand { get; set; }
 

@@ -89,7 +89,7 @@ namespace WPFDemo.API
             public string name { get; set; }
 
         }
-        public bool HttpDownload(string url, string path)
+        public async Task<bool> HttpDownload(string url, string path)
         {
             string tempPath = System.IO.Path.GetDirectoryName(path) + @"\temp";
             System.IO.Directory.CreateDirectory(tempPath);  //创建临时文件目录
@@ -110,12 +110,12 @@ namespace WPFDemo.API
                 //创建本地文件写入流
                 //Stream stream = new FileStream(tempFile, FileMode.Create);
                 byte[] bArr = new byte[1024];
-                int size = responseStream.Read(bArr, 0, (int)bArr.Length);
+                int size = await responseStream.ReadAsync(bArr, 0, (int)bArr.Length);
                 while (size > 0)
                 {
                     //stream.Write(bArr, 0, size);
-                    fs.Write(bArr, 0, size);
-                    size = responseStream.Read(bArr, 0, (int)bArr.Length);
+                    await fs.WriteAsync(bArr, 0, size);
+                    size = await responseStream.ReadAsync(bArr, 0, (int)bArr.Length);
                 }
                 //stream.Close();
                 fs.Close();
@@ -128,106 +128,106 @@ namespace WPFDemo.API
                 return false;
             }
         }
-        private void downFile(string serverUrl, string localFileUrl)
+        private async Task downFile(string serverUrl, string localFileUrl)
         {
-            HttpDownload(serverUrl, localFileUrl);
+            await HttpDownload(serverUrl, localFileUrl);
         }
         public async Task UpdateLocalFiles(CategoryTextImage Category)
         {
 
-            await Task.Run(() =>
-            {
-                UpdateRecord uDao = new UpdateRecord();
-                Category.ProgressBarIsShow = true;
-                Category.ProgressBarVal = 0;
-                //1.GET /products?categoryId=00UGEYYE86PP30V&pageSize=33&page=1&search= HTTP/1.1   根据分页加载所有产品
-                var RequestResult = http.Get(url + string.Format(APIConst.GetProductByCategoryID, Category.CategoryID)).DynamicBody;
-                int MaxCount = RequestResult.total;
-                var RequestResult_2 = http.Get(url + string.Format(APIConst.GetProductByCategoryID_2, Category.CategoryID, MaxCount)).DynamicBody;
+            await Task.Run(async () =>
+           {
+               UpdateRecord uDao = new UpdateRecord();
+               Category.ProgressBarIsShow = true;
+               Category.ProgressBarVal = 0;
+               //1.GET /products?categoryId=00UGEYYE86PP30V&pageSize=33&page=1&search= HTTP/1.1   根据分页加载所有产品
+               var RequestResult = http.Get(url + string.Format(APIConst.GetProductByCategoryID, Category.CategoryID)).DynamicBody;
+               int MaxCount = RequestResult.total;
+               var RequestResult_2 = http.Get(url + string.Format(APIConst.GetProductByCategoryID_2, Category.CategoryID, MaxCount)).DynamicBody;
 
-                //1.2 收集产品ID
-                List<string> productIdS = new List<string>();
-                foreach (var item in RequestResult_2.data)
-                {
-                    productIdS.Add(item.id);
-                }
-                Category.ProgressBarVal = 5;
-                //2.GET /products/Y6UN35PAVZMYPP6 HTTP/1.1
-                foreach (var item in productIdS)
-                {
+               //1.2 收集产品ID
+               List<string> productIdS = new List<string>();
+               foreach (var item in RequestResult_2.data)
+               {
+                   productIdS.Add(item.id);
+               }
+               Category.ProgressBarVal = 5;
+               //2.GET /products/Y6UN35PAVZMYPP6 HTTP/1.1
+               foreach (var item in productIdS)
+               {
 
-                    List<fileItemObj> fileDics = new List<fileItemObj>();
-                    var v1 = http.Get(url + string.Format(APIConst.GetProductObj, item)).DynamicBody;
-                    string url_ = v1.specifications[0].staticMeshes[0].url + "," + v1.specifications[0].staticMeshes[0].packageName;
-                    string dependencies = v1.specifications[0].staticMeshes[0].dependencies;
-                    List<string> arr = dependencies.Split(';').ToList();
-                    arr.Add(url_);
-                    foreach (string item_2 in arr)
-                    {
+                   List<fileItemObj> fileDics = new List<fileItemObj>();
+                   var v1 = http.Get(url + string.Format(APIConst.GetProductObj, item)).DynamicBody;
+                   string url_ = v1.specifications[0].staticMeshes[0].url + "," + v1.specifications[0].staticMeshes[0].packageName;
+                   string dependencies = v1.specifications[0].staticMeshes[0].dependencies;
+                   List<string> arr = dependencies.Split(';').ToList();
+                   arr.Add(url_);
+                   foreach (string item_2 in arr)
+                   {
 
-                        fileItemObj f = new fileItemObj();
-                        if (string.IsNullOrEmpty(item_2))
-                        {
-                            continue;
-                        }
-                        List<string> a = item_2.Split(',').ToList();
-                        f.localUrl = a[1];
-                        f.serverUrl = a[0];
-                        f.houzui = "." + a[0].Split('.')[1];
-                        f.name = v1.specifications[0].staticMeshes[0].packageName;
+                       fileItemObj f = new fileItemObj();
+                       if (string.IsNullOrEmpty(item_2))
+                       {
+                           continue;
+                       }
+                       List<string> a = item_2.Split(',').ToList();
+                       f.localUrl = a[1];
+                       f.serverUrl = a[0];
+                       f.houzui = "." + a[0].Split('.')[1];
+                       f.name = v1.specifications[0].staticMeshes[0].packageName;
 
-                        fileDics.Add(f);
-                    }
+                       fileDics.Add(f);
+                   }
 
-                    double i = 100 / productIdS.Count;
-                    string baseUrl = Environment.CurrentDirectory;
-                    //比较是否需要下载（更新）
-                    foreach (fileItemObj obj in fileDics)
-                    {
-                        string serverUrl, localUrl;
-                        string newLocal = obj.localUrl.Replace("Game", "Content");
-                        string filePath = (baseUrl + "/AZMJ" + newLocal).Replace("/", "\\");
-                        double oneI = i / fileDics.Count;
-                        serverUrl = url + obj.serverUrl;
-                        localUrl = filePath;
-                        string FileFullName = filePath + obj.houzui;
-                        if (File.Exists(FileFullName))
-                        {
-                            string md5 = MD5.CalcFile(FileFullName);
+                   double i = 100 / productIdS.Count;
+                   string baseUrl = Environment.CurrentDirectory;
+                   //比较是否需要下载（更新）
+                   foreach (fileItemObj obj in fileDics)
+                   {
+                       string serverUrl, localUrl;
+                       string newLocal = obj.localUrl.Replace("Game", "Content");
+                       string filePath = (baseUrl + "/AZMJ" + newLocal).Replace("/", "\\");
+                       double oneI = i / fileDics.Count;
+                       serverUrl = url + obj.serverUrl;
+                       localUrl = filePath;
+                       string FileFullName = filePath + obj.houzui;
+                       if (File.Exists(FileFullName))
+                       {
+                           string md5 = MD5.CalcFile(FileFullName);
 
-                            try
-                            {
-                                var vvv1 = http.Get(url + string.Format(APIConst.GetMd5IsExist, md5)).DynamicBody;
-                                string id = vvv1.id;
-                                //跳过不需要更新
-                                continue;
-                            }
-                            catch (Exception)
-                            {
-                                //执行下载
-                                downFile(serverUrl, FileFullName);
+                           try
+                           {
+                               var vvv1 = http.Get(url + string.Format(APIConst.GetMd5IsExist, md5)).DynamicBody;
+                               string id = vvv1.id;
+                               //跳过不需要更新
+                               continue;
+                           }
+                           catch (Exception)
+                           {
+                               //执行下载
+                               await downFile(serverUrl, FileFullName);
 
-                            }
-                        }
-                        else
-                        {
-                            downFile(serverUrl, FileFullName);
+                           }
+                       }
+                       else
+                       {
+                           await downFile(serverUrl, FileFullName);
 
-                        }
+                       }
 
-                        Category.ProgressBarVal += Convert.ToDouble(decimal.Round(decimal.Parse(oneI.ToString()), 2));
-                    }
-                }
-                Category.ProgressBarVal = 100;
-                Category.ProgressBarIsShow = false;
-                Category.IsCompleteDown = true;
-                uDao.insert(new UpdateRecoreModel() { CategoryId = Category.CategoryID, Type = eCategoryType.产品, Time = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") });
-            });
+                       Category.ProgressBarVal += Convert.ToDouble(decimal.Round(decimal.Parse(oneI.ToString()), 2));
+                   }
+               }
+               Category.ProgressBarVal = 100;
+               Category.ProgressBarIsShow = false;
+               Category.IsCompleteDown = true;
+               uDao.insert(new UpdateRecoreModel() { CategoryId = Category.CategoryID, Type = eCategoryType.产品, Time = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") });
+           });
         }
 
         public async Task UpdateLocalFilesByMaterial(CategoryTextImage Category)
         {
-            await Task.Run(() =>
+            await Task.Run(async () =>
             {
                 UpdateRecord uDao = new UpdateRecord();
                 Category.ProgressBarIsShow = true;
@@ -284,13 +284,13 @@ namespace WPFDemo.API
                             catch (Exception)
                             {
                                 //执行下载
-                                downFile(serverUrl, FileFullName);
+                                await downFile(serverUrl, FileFullName);
 
                             }
                         }
                         else
                         {
-                            downFile(serverUrl, FileFullName);
+                            await downFile(serverUrl, FileFullName);
 
                         }
                     end:
@@ -327,7 +327,7 @@ namespace WPFDemo.API
 
                 }
             }
-            
+
 
             return rlsit.OrderByDescending(x => x.IsCompleteDown == true).ToList();
         }
