@@ -2,12 +2,8 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/WPFDemo;component/Styles/Button.xaml">
-                </ResourceDictionary>
-                <ResourceDictionary Source="pack://application:,,,/WPFDemo;component/Styles/ButtonIcxl.xaml">
-                </ResourceDictionary>
-                <ResourceDictionary Source="pack://application:,,,/WPFDemo;component/Styles/DataGrid.xaml">
-                </ResourceDictionary>
+                <ResourceDictionary Source="pack://application:,,,/HandyControl;component/Themes/SkinDefault.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/HandyControl;component/Themes/Theme.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/WPFDemo;component/Styles/ProgressBar.xaml">
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>

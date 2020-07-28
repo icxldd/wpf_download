@@ -25,6 +25,7 @@ namespace WPFDemo.API
         public bool _ProgressBarIsShow = false;
         public double _ProgressBarVal = 0;
         public bool _IsCompleteDown = false;
+        public string _State;
 
         public string CategoryID { get { return _CategoryID; } set { _CategoryID = value; RaisePropertyChanged(); } }
         public string ImageUrl { get { return _ImageUrl; } set { _ImageUrl = value; RaisePropertyChanged(); } }
@@ -32,6 +33,8 @@ namespace WPFDemo.API
         public bool ProgressBarIsShow { get { return _ProgressBarIsShow; } set { _ProgressBarIsShow = value; RaisePropertyChanged(); } }
         public double ProgressBarVal { get { return _ProgressBarVal; } set { _ProgressBarVal = value; RaisePropertyChanged(); } }
         public bool IsCompleteDown { get { return _IsCompleteDown; } set { _IsCompleteDown = value; RaisePropertyChanged(); } }
+        public string State { get { return _State; } set { _State = value; RaisePropertyChanged(); } }
+
     }
     public class API
     {
@@ -199,25 +202,33 @@ namespace WPFDemo.API
                            {
                                var vvv1 = http.Get(url + string.Format(APIConst.GetMd5IsExist, md5)).DynamicBody;
                                string id = vvv1.id;
+                               Category.State = $"下载完成{newLocal}文件";
                                //跳过不需要更新
                                continue;
                            }
                            catch (Exception)
                            {
+                               Category.State = $"正在下载{newLocal}文件";
                                //执行下载
                                await downFile(serverUrl, FileFullName);
-
+                               Category.State = $"下载完成{newLocal}文件";
                            }
                        }
                        else
                        {
+                           Category.State = $"正在下载{newLocal}文件";
+
                            await downFile(serverUrl, FileFullName);
+
+                           Category.State = $"下载完成{newLocal}文件";
 
                        }
 
                        Category.ProgressBarVal += Convert.ToDouble(decimal.Round(decimal.Parse(oneI.ToString()), 2));
                    }
                }
+
+               Category.State = "下载完成";
                Category.ProgressBarVal = 100;
                Category.ProgressBarIsShow = false;
                Category.IsCompleteDown = true;
@@ -254,8 +265,7 @@ namespace WPFDemo.API
                     f.localUrl = v1.packageName;
                     f.serverUrl = v1.url;
                     f.houzui = "." + v1.url.Split('.')[1];
-                    //f.name = v1.specifications[0].staticMeshes[0].packageName;
-
+                    Category.State = $"准备下载{f.localUrl}的资源包";
                     fileDics.Add(f);
 
                     double i = 100d / MaterialIdS.Count;
@@ -277,20 +287,23 @@ namespace WPFDemo.API
                             try
                             {
                                 var vvv1 = http.Get(url + string.Format(APIConst.GetMd5IsExist, md5)).DynamicBody;
-                                string id = vvv1.id;
+                                Category.State = $"下载完成{newLocal}文件";
                                 //跳过不需要更新
                                 goto end;
                             }
                             catch (Exception)
                             {
                                 //执行下载
+                                Category.State = $"正在下载{newLocal}文件";
                                 await downFile(serverUrl, FileFullName);
-
+                                Category.State = $"下载完成{newLocal}文件";
                             }
                         }
                         else
                         {
+                            Category.State = $"正在下载{newLocal}文件";
                             await downFile(serverUrl, FileFullName);
+                            Category.State = $"下载完成{newLocal}文件";
 
                         }
                     end:
@@ -300,6 +313,7 @@ namespace WPFDemo.API
                 Category.ProgressBarVal = 100;
                 Category.ProgressBarIsShow = false;
                 Category.IsCompleteDown = true;
+                Category.State = "下载完成";
                 uDao.insert(new UpdateRecoreModel() { CategoryId = Category.CategoryID, Type = eCategoryType.材质, Time = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") });
             });
         }
@@ -336,6 +350,7 @@ namespace WPFDemo.API
 
         private IList<CategoryTextImage> GetCategoryListByMaterial(dynamic obj)
         {
+            UpdateRecord dao = new UpdateRecord();
             IList<CategoryTextImage> rlsit = new List<CategoryTextImage>();
             foreach (var CategoryObj in obj.children)
             {
@@ -361,6 +376,7 @@ namespace WPFDemo.API
 
                     selfoBj.CategoryText = CategoryObj.name;
                     selfoBj.CategoryID = CategoryObj.id;
+                    selfoBj.IsCompleteDown = dao.find(CategoryObj.id);
                     rlsit.Add(selfoBj);
                 }
                 catch (Exception)
@@ -368,7 +384,7 @@ namespace WPFDemo.API
 
                 }
             }
-            return rlsit;
+            return rlsit.OrderByDescending(x => x.IsCompleteDown == true).ToList();
         }
 
         private static int BuildRanDomNumber(int chidrenLen)

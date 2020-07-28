@@ -56,9 +56,7 @@ namespace WPFDemo.UC.ViewModel
             }
             else if (pageStr.Equals(UCConst.PageConstName.ClickTexture))
             {
-
-                CategoryList = new ObservableCollection<CategoryTextImage>(GlobalData.api.GetMaterialCategory());
-
+                MaterialCategoryList = new ObservableCollection<CategoryTextImage>(GlobalData.api.GetMaterialCategory());
             }
 
         }
@@ -66,15 +64,36 @@ namespace WPFDemo.UC.ViewModel
         private void selectWin(string pageStr)
         {
             IsShowLoadUI = true;
-            initdata(pageStr);
+
             UserControl showPage = null;
             if (pageStr.Equals(UCConst.PageConstName.ClickProduct))
             {
-                showPage = new Product();
+                if (GlobalData.ProductPage == null)
+                {
+                    initdata(pageStr);
+                    showPage = new Product();
+                    GlobalData.ProductPage = showPage;
+                }
+                else
+                {
+
+                    showPage = GlobalData.ProductPage;
+                    showPage.DataContext = GlobalData.ProductPage.DataContext;
+                }
             }
             else if (pageStr.Equals(UCConst.PageConstName.ClickTexture))
             {
-                showPage = new Texture();
+                if (GlobalData.TexturePage == null)
+                {
+                    initdata(pageStr);
+                    showPage = new Texture();
+                    GlobalData.TexturePage = showPage;
+                }
+                else
+                {
+                    showPage = GlobalData.TexturePage;
+                    showPage.DataContext = GlobalData.TexturePage.DataContext;
+                }
             }
             IsShowLoadUI = false;
             win.content.Content = showPage;
@@ -104,5 +123,14 @@ namespace WPFDemo.UC.ViewModel
         }
 
 
+
+
+        private ObservableCollection<CategoryTextImage> _MaterialCategoryList = new ObservableCollection<CategoryTextImage>();
+
+        public ObservableCollection<CategoryTextImage> MaterialCategoryList
+        {
+            get { return _MaterialCategoryList; }
+            set { _MaterialCategoryList = value; RaisePropertyChanged(); }
+        }
     }
 }
