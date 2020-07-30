@@ -26,12 +26,13 @@ namespace WPFDemo.API
         public double _ProgressBarVal = 0;
         public bool _IsCompleteDown = false;
         public string _State;
-
+        public double _showOpacity = APIConst.defalutOpacity;
         public string CategoryID { get { return _CategoryID; } set { _CategoryID = value; RaisePropertyChanged(); } }
         public string ImageUrl { get { return _ImageUrl; } set { _ImageUrl = value; RaisePropertyChanged(); } }
         public string CategoryText { get { return _CategoryText; } set { _CategoryText = value; RaisePropertyChanged(); } }
         public bool ProgressBarIsShow { get { return _ProgressBarIsShow; } set { _ProgressBarIsShow = value; RaisePropertyChanged(); } }
         public double ProgressBarVal { get { return _ProgressBarVal; } set { _ProgressBarVal = value; RaisePropertyChanged(); } }
+        public double ShowOpacity { get { return _showOpacity; } set { _showOpacity = value; RaisePropertyChanged(); } }
         public bool IsCompleteDown { get { return _IsCompleteDown; } set { _IsCompleteDown = value; RaisePropertyChanged(); } }
         public string State { get { return _State; } set { _State = value; RaisePropertyChanged(); } }
 
@@ -230,6 +231,7 @@ namespace WPFDemo.API
 
                Category.State = "下载完成";
                Category.ProgressBarVal = 100;
+               Category.ShowOpacity = 1;
                Category.ProgressBarIsShow = false;
                Category.IsCompleteDown = true;
                uDao.insert(new UpdateRecoreModel() { CategoryId = Category.CategoryID, Type = eCategoryType.产品, Time = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") });
@@ -312,6 +314,7 @@ namespace WPFDemo.API
                 }
                 Category.ProgressBarVal = 100;
                 Category.ProgressBarIsShow = false;
+                Category.ShowOpacity = 1;
                 Category.IsCompleteDown = true;
                 Category.State = "下载完成";
                 uDao.insert(new UpdateRecoreModel() { CategoryId = Category.CategoryID, Type = eCategoryType.材质, Time = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") });
@@ -334,11 +337,13 @@ namespace WPFDemo.API
                     {
                         selfoBj.ImageUrl = url + CategoryObj.iconUrl;
                     }
-                   
-                    
+
+
                     selfoBj.CategoryText = CategoryObj.name;
                     selfoBj.CategoryID = CategoryObj.id;
-                    selfoBj.IsCompleteDown = dao.find(CategoryObj.id);
+                    bool b = dao.find(CategoryObj.id);
+                    selfoBj.IsCompleteDown = b;
+                    selfoBj.ShowOpacity = b ? 1 :APIConst.defalutOpacity;
                     rlsit.Add(selfoBj);
                 }
                 catch (Exception)
@@ -373,7 +378,9 @@ namespace WPFDemo.API
 
                     selfoBj.CategoryText = CategoryObj.name;
                     selfoBj.CategoryID = CategoryObj.id;
-                    selfoBj.IsCompleteDown = dao.find(CategoryObj.id);
+                    bool b = dao.find(CategoryObj.id);
+                    selfoBj.IsCompleteDown = b;
+                    selfoBj.ShowOpacity = b ? 1 : APIConst.defalutOpacity;
                     rlsit.Add(selfoBj);
                 }
                 catch (Exception)

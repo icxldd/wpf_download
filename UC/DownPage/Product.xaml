@@ -14,7 +14,7 @@
         <cv:IsShowConverters x:Key="showcv"></cv:IsShowConverters>
         <cv:ImgMultiConverters x:Key="multcv"></cv:ImgMultiConverters>
     </UserControl.Resources>
-   
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition></RowDefinition>
@@ -29,7 +29,7 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <StackPanel  hc:Poptip.Content="{Binding State}" hc:Poptip.Placement="Bottom" Orientation="Vertical" Width="150" HorizontalAlignment="Left" Margin="10 15" Cursor="Hand">
-                            <Image x:Name="cc" Height="150"  Width="150" Stretch="Fill">
+                            <Image x:Name="cc" Height="150"  Width="150" Stretch="Fill" Opacity="{Binding ShowOpacity}">
                                 <Image.Clip>
                                     <RectangleGeometry RadiusX="100" RadiusY="100" Rect="0,0,150,150"/>
                                 </Image.Clip>
@@ -71,5 +71,5 @@
         </ScrollViewer>
         <!--圆圈  文本-->
     </Grid>
-   
+
 </UserControl>

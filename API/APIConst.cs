@@ -38,5 +38,9 @@ namespace WPFDemo.API
 
         public static string defulatMaterialImagePath = Environment.CurrentDirectory + "/Images/MaterialDefaultImg.jpg";
         public static string defulatMaterialImagePath_2 = Environment.CurrentDirectory + "/Images/MaterialDefaultImg_2.jpg";
+
+
+
+        public static double defalutOpacity = 0.3;
     }
 }
