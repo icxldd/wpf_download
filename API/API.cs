@@ -326,11 +326,16 @@ namespace WPFDemo.API
                 try
                 {
                     CategoryTextImage selfoBj = new CategoryTextImage();
-
-                    var RequestResult = http.Get(url + string.Format(APIConst.GetProductByCategoryID, CategoryObj.id)).DynamicBody;
-                    var data = RequestResult.data;
-                    int len = BuildRanDomNumber(data.Length);
-                    selfoBj.ImageUrl = url + data[len].icon;
+                    if (string.IsNullOrEmpty(CategoryObj.iconUrl))
+                    {
+                        selfoBj.ImageUrl = APIConst.defulatMaterialImagePath;
+                    }
+                    else
+                    {
+                        selfoBj.ImageUrl = url + CategoryObj.iconUrl;
+                    }
+                   
+                    
                     selfoBj.CategoryText = CategoryObj.name;
                     selfoBj.CategoryID = CategoryObj.id;
                     selfoBj.IsCompleteDown = dao.find(CategoryObj.id);
@@ -357,21 +362,13 @@ namespace WPFDemo.API
                 try
                 {
                     CategoryTextImage selfoBj = new CategoryTextImage();
-
-                    var RequestResult = http.Get(url + string.Format(APIConst.GetMaterialByCategoryID, CategoryObj.id)).DynamicBody;
-                    var data = RequestResult.data;
-                    if (data == null)
-                    {
-                        continue;
-                    }
-                    int len = BuildRanDomNumber(data.Length);
-                    if (data[len].icon == null)
+                    if (CategoryObj.iconUrl == null)
                     {
                         selfoBj.ImageUrl = APIConst.defulatMaterialImagePath;
                     }
                     else
                     {
-                        selfoBj.ImageUrl = url + data[len].icon;
+                        selfoBj.ImageUrl = url + CategoryObj.iconUrl;
                     }
 
                     selfoBj.CategoryText = CategoryObj.name;
